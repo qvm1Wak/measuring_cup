@@ -1,0 +1,16 @@
+{
+  "name": "recipes",
+  "version": "0.0.1",
+  "private": true,
+  "dependencies": {
+    "express": "3.4.8",
+    "serve-static": "1.9.2",
+    "finalhandler": "0.3.4"
+  },
+  "jspm": {
+    "dependencies": {
+      "jquery": "github:components/jquery@^2.1.1",
+      "lodash": "npm:lodash@^2.4.1"
+    }
+  }
+}
