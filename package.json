@@ -9,6 +9,7 @@
   },
   "jspm": {
     "dependencies": {
+      "JWally/jsLPSolver": "github:JWally/jsLPSolver@master",
       "jquery": "github:components/jquery@^2.1.1",
       "lodash": "npm:lodash@^2.4.1"
     }
