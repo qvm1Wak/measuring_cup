@@ -9,7 +9,6 @@ import Controller from './controller';
 import Template from './template';
 
 $(() => {
-
   /**
    * Sets up a brand new Recipe ingredients list.
    *
@@ -23,17 +22,17 @@ $(() => {
       this.view = new View(this.template);
       this.controller = new Controller(this.model, this.view);
     }
-
+    
     setView () {
       this.controller.setView(document.location.hash);
     }
   }
-
+  
   var recipe = new Recipe('recipe');
 
-  $(window).on('load', recipe.setView);
-  $(window).on('hashchange', recipe.setView);
+  recipe.setView();
 
+  $(window).on('hashchange', recipe.setView);
 });
 
 

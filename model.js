@@ -18,8 +18,7 @@ Model.prototype.create = function (title, callback) {
   title = title || '';
   callback = callback || function () {};
   var newItem = {
-    title: title.trim(),
-    completed: false
+    title: title.trim()
   };
   this.storage.save(newItem, callback);
 };

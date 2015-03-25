@@ -10,10 +10,7 @@ function Store(name, callback) {
   callback = callback || function () {};
   this._dbName = name;
   if (!localStorage[name]) {
-    var data = {
-      todos: []
-    };
-    localStorage[name] = JSON.stringify(data);
+    localStorage[name] = JSON.stringify({ recipe: [] });
   }
   callback.call(this, JSON.parse(localStorage[name]));
 }
@@ -34,10 +31,10 @@ Store.prototype.find = function (query, callback) {
   if (!callback) {
     return;
   }
-  var todos = JSON.parse(localStorage[this._dbName]).todos;
-  callback.call(this, todos.filter(function (todo) {
+  var ingredients = JSON.parse(localStorage[this._dbName]).recipe;
+  callback.call(this, ingredients.filter((ingredient) => {
     for (var q in query) {
-      if (query[q] !== todo[q]) {
+      if (query[q] !== ingredient[q]) {
         return false;
       }
     }
@@ -51,7 +48,7 @@ Store.prototype.find = function (query, callback) {
  */
 Store.prototype.findAll = function (callback) {
   callback = callback || function () {};
-  callback.call(this, JSON.parse(localStorage[this._dbName]).todos);
+  callback.call(this, JSON.parse(localStorage[this._dbName]).recipe);
 };
 /**
  * Will save the given data to the DB. If no item exists it will create a new
@@ -63,24 +60,24 @@ Store.prototype.findAll = function (callback) {
  */
 Store.prototype.save = function (updateData, callback, id) {
   var data = JSON.parse(localStorage[this._dbName]);
-  var todos = data.todos;
+  var ingredients = data.recipe;
   callback = callback || function () {};
   // If an ID was actually given, find the item and update each property
   if (id) {
-    for (var i = 0; i < todos.length; i++) {
-      if (todos[i].id === id) {
+    for (var i = 0; i < ingredients.length; i++) {
+      if (ingredients[i].id === id) {
         for (var key in updateData) {
-          todos[i][key] = updateData[key];
+          ingredients[i][key] = updateData[key];
         }
         break;
       }
     }
     localStorage[this._dbName] = JSON.stringify(data);
-    callback.call(this, JSON.parse(localStorage[this._dbName]).todos);
+    callback.call(this, JSON.parse(localStorage[this._dbName]).recipe);
   } else {
     // Generate an ID
     updateData.id = new Date().getTime();
-    todos.push(updateData);
+    ingredients.push(updateData);
     localStorage[this._dbName] = JSON.stringify(data);
     callback.call(this, [updateData]);
   }
@@ -93,15 +90,15 @@ Store.prototype.save = function (updateData, callback, id) {
  */
 Store.prototype.remove = function (id, callback) {
   var data = JSON.parse(localStorage[this._dbName]);
-  var todos = data.todos;
-  for (var i = 0; i < todos.length; i++) {
-    if (todos[i].id == id) {
-      todos.splice(i, 1);
+  var ingredients = data.recipe;
+  for (var i = 0; i < ingredients.length; i++) {
+    if (ingredients[i].id == id) {
+      ingredients.splice(i, 1);
       break;
     }
   }
   localStorage[this._dbName] = JSON.stringify(data);
-  callback.call(this, JSON.parse(localStorage[this._dbName]).todos);
+  callback.call(this, JSON.parse(localStorage[this._dbName]).recipe);
 };
 /**
  * Will drop all storage and start fresh
@@ -109,7 +106,7 @@ Store.prototype.remove = function (id, callback) {
  * @param {function} callback The callback to fire after dropping the data
  */
 Store.prototype.drop = function (callback) {
-  localStorage[this._dbName] = JSON.stringify({todos: []});
-  callback.call(this, JSON.parse(localStorage[this._dbName]).todos);
+  localStorage[this._dbName] = JSON.stringify({recipe: []});
+  callback.call(this, JSON.parse(localStorage[this._dbName]).recipe);
 };
 export default Store;

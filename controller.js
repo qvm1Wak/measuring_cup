@@ -6,12 +6,13 @@
  * @param {object} view The view instance
  */
 class Controller {
-  constructor (view, model) {
+  constructor (model, view) {
+    var that = this;
     this.model = model;
     this.view = view;
-    // this.view.bind('newIngredient', function (title) {
-    //   this.addItem(title);
-    // });
+    this.view.bind('newItem', function (title) {
+      that.addItem(title);
+    });
   }
 
   // return;
@@ -30,7 +31,11 @@ class Controller {
   setView (locationHash) {
     var route = locationHash.split('/')[1];
     var page = route || '';
-    this._updateFilterState(page);
+    // this._activeRoute = page;
+    // if (page === '') {
+    //   this._activeRoute = 'All';
+    // }
+    // TODO handle page transition details
   }
 
   /**
@@ -38,12 +43,13 @@ class Controller {
    * object and it'll handle the DOM insertion and saving of the new item.
    */
   addItem (title) {
+    var that = this;
     if (title.trim() === '') {
       return;
     }
     this.model.create(title, function () {
-      this.view.render('clearNewTodo');
-      this._filter(true);
+      that.view.render('clearNewItem');
+      // this._filter(true);
     });
   }
 
