@@ -13,15 +13,11 @@ class Controller {
     this.view.bind('newItem', function (title) {
       that.addItem(title);
     });
+    this.view.bind('removeItem', function (id) {
+      that.removeItem(id);
+    });
+    this.model.removeAll();
   }
-
-  // return;
-  // this.view.bind('itemEdit', function (item) {
-  //   this.editItem(item.id);
-  // });
-  // this.view.bind('itemEditDone', function (item) {
-  //   this.editItemSave(item.id, item.title);
-  // });
 
   /**
    * Loads and initialises the view
@@ -31,10 +27,11 @@ class Controller {
   setView (locationHash) {
     var route = locationHash.split('/')[1];
     var page = route || '';
-    // this._activeRoute = page;
-    // if (page === '') {
-    //   this._activeRoute = 'All';
-    // }
+    this._activeRoute = page;
+    if (page === '') {
+      this._activeRoute = 'All';
+      this.view.focus();
+    }
     // TODO handle page transition details
   }
 
@@ -68,9 +65,7 @@ class Controller {
   removeItem (id) {
     var that = this;
     this.model.remove(id, function () {
-      this.view.render('removeItem', id);
       // TODO this is where the simplex is computed
-
       that.model.read((data) => {
         that.view.render('showItemList', data);
       });

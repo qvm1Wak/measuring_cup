@@ -21,32 +21,30 @@ class View {
     this.$main = qs('#main');
     this.$newItem = $('.new-item');
     this.$newItemButton = $('.new-item-button');
+    this.removeItemSelector = '.remove-item-button';
     this.$itemList = $('.item-list');
-    this.handlers = { newItem: [] };
+    this.handlers = { newItem: [], removeItem: [] };
 
     var that = this;
     
     $(this.$newItemButton).on('click', function () {
       _.each(that.handlers['newItem'], (handler) => { handler(that.$newItem.val()); });
       that.$newItem.val('');
-      that.$newItem.blur(); // ?                        
+      // that.$newItem.blur();
     });
-    // $.live(this.$newItem, 'keypress', function (event) {
-    //   if (event.keyCode === this.ENTER_KEY) {
-    //     _.each(that.handlers['newItem'], (handler) => { handler(this.value); });
-    //     // Remove the cursor from the input when you hit enter just like if it
-    //     // were a real form
-    //     this.blur();
-    //   }
-    // });
+    $(this.$newItem).on('keypress', function (event) {
+      if (event.keyCode === that.ENTER_KEY) {
+        _.each(that.handlers['newItem'], (handler) => { handler(that.$newItem.val()); });
+        that.$newItem.val('');
+        // that.$newItem.blur();
+      }
+    });
+    $('body').on('click', this.removeItemSelector, function () {
+      var $li = $(this).closest('li');
+      _.each(that.handlers['removeItem'], (handler) => { handler($li.attr('data-id')); });
+    });
   }
 
-  _removeItem (id) {
-    var elem = qs('[data-id="' + id + '"]');
-    if (elem) {
-      this.$todoList.removeChild(elem);
-    }
-  }
   _clearCompletedButton (completedCount, visible) {
     this.$clearCompleted.innerHTML = this.template.clearCompletedButton(completedCount);
     this.$clearCompleted.style.display = visible ? 'block' : 'none';
@@ -88,14 +86,14 @@ class View {
       label.textContent = title;
     });
   }
+  focus () {
+    this.$newItem.focus();
+  }
   render (viewCmd, parameter) {
     var that = this;
     var viewCommands = {
       showItemList: function () {
         that.$itemList.html(that.template.show(parameter));
-      },
-      removeItem: function () {
-        that._removeItem(parameter);
       },
       clearNewItem: function () {
         that.$newItem.value = '';
