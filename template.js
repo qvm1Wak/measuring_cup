@@ -27,7 +27,7 @@ function Template() {
     =	'<li data-id="{{id}}">'
     +	'<div class="view">'
     +	'{{title}}'
-    +	'<button class="destroy"></button>'
+    +	'<button class="destroy-item"></button>'
     +	'</div>'
     +	'</li>';
 }

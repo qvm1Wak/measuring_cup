@@ -21,6 +21,7 @@ class View {
     this.$main = qs('#main');
     this.$newItem = $('.new-item');
     this.$newItemButton = $('.new-item-button');
+    this.$itemList = $('.item-list');
     this.handlers = { newItem: [] };
 
     var that = this;
@@ -90,8 +91,8 @@ class View {
   render (viewCmd, parameter) {
     var that = this;
     var viewCommands = {
-      showEntries: function () {
-        that.$todoList.innerHTML = this.template.show(parameter);
+      showItemList: function () {
+        that.$itemList.html(that.template.show(parameter));
       },
       removeItem: function () {
         that._removeItem(parameter);

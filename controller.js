@@ -47,9 +47,14 @@ class Controller {
     if (title.trim() === '') {
       return;
     }
-    this.model.create(title, function () {
+    this.model.create(title, () => {
       that.view.render('clearNewItem');
-      // this._filter(true);
+
+      // TODO this is where the simplex is computed
+
+      that.model.read((data) => {
+        that.view.render('showItemList', data);
+      });
     });
   }
 
@@ -61,10 +66,15 @@ class Controller {
    * storage
    */
   removeItem (id) {
+    var that = this;
     this.model.remove(id, function () {
       this.view.render('removeItem', id);
+      // TODO this is where the simplex is computed
+
+      that.model.read((data) => {
+        that.view.render('showItemList', data);
+      });
     });
-    this._filter();
   }
 
   saveAllItems () {
