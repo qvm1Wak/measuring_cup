@@ -24,17 +24,17 @@ class View {
 
     var that = this;
     
-    $(this.$newItemButton).on('click', function () {
+    $(this.$newItemButton).on('click', () => {
       _.each(that.handlers['newItem'], (handler) => { handler(that.$newItem.val()); });
       that.$newItem.val('');
     });
-    $(this.$newItem).on('keypress', function (event) {
+    $(this.$newItem).on('keypress', (event) => {
       if (event.keyCode === that.ENTER_KEY) {
         _.each(that.handlers['newItem'], (handler) => { handler(that.$newItem.val()); });
         that.$newItem.val('');
       }
     });
-    $('body').on('click', this.removeItemSelector, function () {
+    $('body').on('click', this.removeItemSelector, () => {
       var $li = $(this).closest('li');
       _.each(that.handlers['removeItem'], (handler) => { handler($li.attr('data-id')); });
     });
@@ -43,13 +43,13 @@ class View {
   render (viewCmd, parameter) {
     var that = this;
     var viewCommands = {
-      showItemList: function () {
+      showItemList: () => {
         that.$itemList.html(that.template.show(parameter));
       },
-      clearNewItem: function () {
+      clearNewItem: () => {
         that.$newItem.value = '';
       },
-      focus: function () {
+      focus: () => {
         that.$newItem.focus();
       }
     };

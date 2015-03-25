@@ -10,10 +10,10 @@ class Controller {
     var that = this;
     this.model = model;
     this.view = view;
-    this.view.bind('newItem', function (title) {
+    this.view.bind('newItem', (title) => {
       that.addItem(title);
     });
-    this.view.bind('removeItem', function (id) {
+    this.view.bind('removeItem', (id) => {
       that.removeItem(id);
     });
     // this.model.removeAll();
@@ -64,7 +64,7 @@ class Controller {
    */
   removeItem (id) {
     var that = this;
-    this.model.remove(id, function () {
+    this.model.remove(id, () => {
       // TODO this is where the simplex is computed
       that.model.read((data) => {
         that.view.render('showItemList', data);
@@ -73,7 +73,7 @@ class Controller {
   }
 
   saveAllItems () {
-    this.model.read(function (data) {
+    this.model.read((data) => {
       // save the list somewhere
       // this.view.render('saveRecipe', data);
     });
