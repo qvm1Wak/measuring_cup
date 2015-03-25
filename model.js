@@ -9,7 +9,7 @@ function Model(storage) {
   this.storage = storage;
 }
 /**
- * Creates a new todo model
+ * Creates a new recipe model
  *
  * @param {string} [title] The title of the task
  * @param {function} [callback] The callback to fire after the model is created
@@ -77,27 +77,6 @@ Model.prototype.remove = function (id, callback) {
  */
 Model.prototype.removeAll = function (callback) {
   this.storage.drop(callback);
-};
-/**
- * Returns a count of all todos
- */
-Model.prototype.getCount = function (callback) {
-  var todos = {
-    active: 0,
-    completed: 0,
-    total: 0
-  };
-  this.storage.findAll(function (data) {
-    data.forEach(function (todo) {
-      if (todo.completed) {
-        todos.completed++;
-      } else {
-        todos.active++;
-      }
-      todos.total++;
-    });
-    callback(todos);
-  });
 };
 
 export default Model;
