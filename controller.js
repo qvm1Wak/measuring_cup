@@ -16,7 +16,7 @@ class Controller {
     this.view.bind('removeItem', function (id) {
       that.removeItem(id);
     });
-    this.model.removeAll();
+    // this.model.removeAll();
   }
 
   /**
