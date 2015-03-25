@@ -30,7 +30,7 @@ class Controller {
     this._activeRoute = page;
     if (page === '') {
       this._activeRoute = 'All';
-      this.view.focus();
+      this.view.render('focus');
     }
     // TODO handle page transition details
   }

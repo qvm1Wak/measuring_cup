@@ -16,9 +16,6 @@ class View {
   constructor (template) {
     this.template = template;
     this.ENTER_KEY = 13;
-    this.ESCAPE_KEY = 27;
-    this.$list = qs('.list');
-    this.$main = qs('#main');
     this.$newItem = $('.new-item');
     this.$newItemButton = $('.new-item-button');
     this.removeItemSelector = '.remove-item-button';
@@ -30,13 +27,11 @@ class View {
     $(this.$newItemButton).on('click', function () {
       _.each(that.handlers['newItem'], (handler) => { handler(that.$newItem.val()); });
       that.$newItem.val('');
-      // that.$newItem.blur();
     });
     $(this.$newItem).on('keypress', function (event) {
       if (event.keyCode === that.ENTER_KEY) {
         _.each(that.handlers['newItem'], (handler) => { handler(that.$newItem.val()); });
         that.$newItem.val('');
-        // that.$newItem.blur();
       }
     });
     $('body').on('click', this.removeItemSelector, function () {
@@ -45,9 +40,6 @@ class View {
     });
   }
 
-  focus () {
-    this.$newItem.focus();
-  }
   render (viewCmd, parameter) {
     var that = this;
     var viewCommands = {
@@ -56,10 +48,14 @@ class View {
       },
       clearNewItem: function () {
         that.$newItem.value = '';
+      },
+      focus: function () {
+        that.$newItem.focus();
       }
     };
     viewCommands[viewCmd]();
   }
+
   bind (event, handler) {
     this.handlers[event].push(handler);
   }
