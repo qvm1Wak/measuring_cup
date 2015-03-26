@@ -3,11 +3,18 @@
   "version": "0.0.1",
   "private": true,
   "dependencies": {
+    "body-parser": "^1.12.2",
     "express": "3.4.8",
-    "serve-static": "1.9.2",
-    "finalhandler": "0.3.4"
+    "express-domain-middleware": "^0.1.0",
+    "finalhandler": "0.3.4",
+    "okay": "^1.0.0",
+    "pg": "^4.3.0",
+    "serve-static": "1.9.2"
   },
   "jspm": {
+    "directories": {
+      "baseURL": "public"
+    },
     "dependencies": {
       "JWally/jsLPSolver": "github:JWally/jsLPSolver@master",
       "jquery": "github:components/jquery@^2.1.1",

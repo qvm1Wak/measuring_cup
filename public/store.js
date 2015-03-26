@@ -89,7 +89,6 @@ Store.prototype.save = function (updateData, callback, id) {
  * @param {function} callback The callback to fire after saving
  */
 Store.prototype.remove = function (id, callback) {
-  console.log('yo');
   var data = JSON.parse(localStorage[this._dbName]);
   var ingredients = data.recipe;
   for (var i = 0; i < ingredients.length; i++) {

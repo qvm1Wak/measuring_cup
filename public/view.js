@@ -34,8 +34,8 @@ class View {
         that.$newItem.val('');
       }
     });
-    $('body').on('click', this.removeItemSelector, () => {
-      var $li = $(this).closest('li');
+    $('body').on('click', this.removeItemSelector, (e) => {
+      var $li = $(e.currentTarget).closest('li');
       _.each(that.handlers['removeItem'], (handler) => { handler($li.attr('data-id')); });
     });
   }
