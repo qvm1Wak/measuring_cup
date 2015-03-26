@@ -1,0 +1,15 @@
+{
+  "name": "jsSimplexSolver",
+  "version": "0.0.1",
+  "private": true,
+  "main": "./src/solver",
+  "devDependencies": {
+    "grunt": "*",
+    "grunt-contrib-jshint": "~0.9",
+    "grunt-mocha-test": "*",
+    "grunt-contrib-uglify": "*",
+    "grunt-jsbeautifier": "*",
+    "benchmark": "*"
+  },
+  "jspm": {}
+}
