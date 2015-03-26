@@ -1,2 +1,4 @@
 node_modules/*
 public/jspm_packages/*
+.DS_Store
+public/.DS_Store
