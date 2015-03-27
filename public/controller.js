@@ -39,17 +39,18 @@ class Controller {
    * An event to fire whenever you want to add an item. Simply pass in the event
    * object and it'll handle the DOM insertion and saving of the new item.
    */
-  addItem (title) {
+  addItem (item) {
     var that = this;
-    if (title.trim() === '') {
+    if (item.long_description.trim() === '') {
       return;
     }
-    this.model.create(title, () => {
+    var toSave = !!item.food_number ? 'food_number:' + item.food_number : item.long_description;
+    
+    this.model.create(toSave, () => {
       that.view.render('clearNewItem');
-
-      // TODO this is where the simplex is computed
-
       that.model.read((data) => {
+        // call to server
+        // compute simplex
         that.view.render('showItemList', data);
       });
     });
@@ -65,8 +66,9 @@ class Controller {
   removeItem (id) {
     var that = this;
     this.model.remove(id, () => {
-      // TODO this is where the simplex is computed
       that.model.read((data) => {
+        // call to server
+        // compute simplex
         that.view.render('showItemList', data);
       });
     });

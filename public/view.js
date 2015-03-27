@@ -42,19 +42,25 @@ class View {
       source: ingredientTypeaheadIndex.ttAdapter()
     }); 
 
-    this.$newItem.bind('typeahead:selected', function(obj, datum, name) {      
-      _.each(that.handlers['newItem'], (handler) => { handler(that.$newItem.typeahead('val')); });
+    this.$newItem.bind('typeahead:selected', function(obj, datum, name) {
+      var item = datum;
+      _.each(that.handlers['newItem'], (handler) => { handler(item); });
       that.$newItem.typeahead('val', '');
       console.log(datum);
     });
     
-
     this.$newItem.on('keypress', (event) => {
+      var item = {
+        long_description: that.$newItem.typeahead('val'),
+        foodgroup_code: null,
+        food_number: null
+      };
       if (event.keyCode === that.ENTER_KEY) {
-        _.each(that.handlers['newItem'], (handler) => { handler(that.$newItem.typeahead('val')); });
+        _.each(that.handlers['newItem'], (handler) => { handler(item); });
         that.$newItem.typeahead('val', '');
       }
     });
+    
     $('body').on('click', this.removeItemSelector, (e) => {
       var $li = $(e.currentTarget).closest('li');
       _.each(that.handlers['removeItem'], (handler) => { handler($li.attr('data-id')); });
