@@ -9,6 +9,7 @@
     "finalhandler": "0.3.4",
     "okay": "^1.0.0",
     "pg": "^4.3.0",
+    "relevancy": "^0.2.0",
     "serve-static": "1.9.2"
   },
   "jspm": {

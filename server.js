@@ -5,6 +5,7 @@ var express = require('express');
 var serveStatic = require('serve-static');
 var connectionString = "postgres://postgres:password@172.17.0.2/measuring_cup";
 var bodyParser = require('body-parser');
+var relevancy = require('relevancy');
 
 // parse application/json
 var app = express();
@@ -42,14 +43,28 @@ app.get('/ingredients/:foodId', function(req, res) {
   });
 });
 
-app.get('/foods/', function(req, res) {
-  var results = [];
+app.get('/foods/:foodName', function(req, res) {
   pg.connect(connectionString, function(err, client, done) {
-    var id = req.param('ingredientId');
+    var name = req.param('foodName');
+    var results = [];
     var query = client.query('select food_number, long_description from food_description;');
-
-    query.on('row', function(row) {
-      results.push(row);
+    var lowest = {relevancy: -Infinity};
+    var sortRegex = relevancy.defaultSorter._generateSubjectRegex(name);
+    query.on('row', function(row) {      
+      var i = null;
+      row.relevancy = relevancy.defaultSorter._calcWeight(row.long_description, sortRegex, name);
+      // row.relevancy = relevancy.weight(name, row.long_description);
+      if (row.relevancy < lowest.relevancy && results.length === 10) return;
+      
+      i = results.reduce(function (memo, result, idx) {
+        if (memo === null && (!result || row.relevancy > result.relevancy)) {
+          memo = idx;
+        }
+        return memo;
+      }, null);
+      results.splice(i === null ? results.length - 1 : i, 0, row);
+      lowest = results[results.length -1];
+      if (results.length > 10) results = results.slice(0, 10);
     });
 
     query.on('end', function() {
