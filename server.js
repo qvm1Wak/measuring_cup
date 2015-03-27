@@ -27,11 +27,22 @@ app.get('/ingredients/:foodIds', function(req, res) {
   pg.connect(connectionString, function(err, client, done) {
     var ids = req.param('foodIds'); // TODO sql injection
     ids = "'" + ids.split(',').join("','") + "'";
-    var queryString = "SELECT a.food_number, a.long_description, b.nutrient_description, a.nutrient_value, b.units FROM nutrient_data as a JOIN nutrient_definition b on a.nutrient_number = b.nutrient_number WHERE a.food_number in (" + ids + ");"; //" + ids + ");";
+    var queryString = "\
+        SELECT a.food_number, c.long_description, b.nutrient_description, a.nutrient_value, b.units \
+        FROM nutrient_data as a \
+        JOIN nutrient_definition b \
+          on a.nutrient_number = b.nutrient_number \
+        JOIN food_description c \
+          on a.food_number = c.food_number \
+        WHERE a.food_number in (" + ids + ");";
     var query = client.query(queryString);
     query.on('row', function(row) {
-      results[row.food_number] = results[row.food_number] || { title: row.long_description, food_number: row.food_number };
-      results[row.food_number][row.nutrient_description] = {
+      results[row.food_number] = results[row.food_number] || {
+        long_description: row.long_description,
+        food_number: row.food_number
+      };
+      results[row.food_number][row.nutrient_description.toLowerCase()] = {
+        name: row.nutrient_description,
         value: row.nutrient_value,
         units: row.units
       };

@@ -14,8 +14,8 @@ class Controller {
     var that = this;
     this.model = model;
     this.view = view;
-    this.view.bind('newItem', title => {
-      that.addItem(title);
+    this.view.bind('newItem', item => {
+      that.addItem(item);
     });
     this.view.bind('removeItem', id => {
       that.removeItem(id);
@@ -56,12 +56,22 @@ class Controller {
         var foodItems = _.filter(data, item => { return item.title.startsWith('food_number:'); });
         var query = _.map(_.pluck(foodItems, 'title'), item => {
           return item.slice('food_number:'.length);
-        }).join(',');
+        });
         $.ajax({
           url: 'ingredients/' + query
-        }).done(function(data) {
+        }).done(function(ingredientData) {
           // compute simplex
-          that.view.render('showItemList', data);
+          console.log(data);
+          var index = _.indexBy(ingredientData, 'food_number');
+          var viewData = data.map(item => {
+            var id = item.title.startsWith('food_number:') ? item.title.slice('food_number:'.length) : item.title;
+            if (index[id]) { return _.extend({id: item.id}, index[id]); };
+            return {
+              id: item.id,
+              long_description: item.title
+            };
+          });
+          that.view.render('showItemList', viewData);
         });
       });
     });
@@ -76,26 +86,35 @@ class Controller {
    */
   removeItem (id) {
     var that = this;
+    console.log(id);
     this.model.remove(id, () => {
-      that.model.read((data) => {
-        that.model.read((data) => {
-          var foodItems = _.filter(data, item => { return item.title.startsWith('food_number:'); });
-          var query = _.map(_.pluck(foodItems, 'title'), item => {
-            return item.slice('food_number:'.length);
-          }).join(',');
-          $.ajax({
-            url: 'ingredients/' + query
-          }).done(function(data) {
-            // compute simplex
-            that.view.render('showItemList', data);
+      that.model.read(data => {
+        var foodItems = _.filter(data, item => { return item.title.startsWith('food_number:'); });
+        var query = _.map(_.pluck(foodItems, 'title'), item => {
+          return item.slice('food_number:'.length);
+        });
+        $.ajax({
+          url: 'ingredients/' + query
+        }).done(function(ingredientData) {
+          // compute simplex
+          console.log(data);
+          var index = _.indexBy(ingredientData, 'food_number');
+          var viewData = data.map(item => {
+            var id = item.title.startsWith('food_number:') ? item.title.slice('food_number:'.length) : item.title;
+            if (index[id]) { return _.extend({id: item.id}, index[id]); };
+            return {
+              id: item.id,
+              long_description: item.title
+            };
           });
+          that.view.render('showItemList', viewData);
         });
       });
     });
   }
 
   saveAllItems () {
-    this.model.read((data) => {
+    this.model.read(data => {
       // save the list somewhere
       // this.view.render('saveRecipe', data);
     });
@@ -120,7 +139,7 @@ class Controller {
           // }
         };
 
-    var isNumeric = function (n) {
+    var isNumeric = n => {
       return !isNaN(parseFloat(n)) && isFinite(n);
     };
 

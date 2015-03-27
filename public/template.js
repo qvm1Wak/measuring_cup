@@ -26,7 +26,7 @@ function Template() {
   this.defaultTemplate
     =	'<li data-id="{{id}}">'
     +	'<div class="view">'
-    +	'{{title}}'
+    +	'{{long_description}}'
     +	'<button class="remove-item-button"></button>'
     +	'</div>'
     +	'</li>';
@@ -53,7 +53,7 @@ Template.prototype.show = function (data) {
   for (i = 0, l = data.length; i < l; i++) {
     var template = this.defaultTemplate;
     template = template.replace('{{id}}', data[i].id);
-    template = template.replace('{{title}}', escape(data[i].title));
+    template = template.replace('{{long_description}}', escape(data[i].long_description));
     view = view + template;
   }
   return view;

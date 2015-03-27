@@ -36,7 +36,7 @@ class View {
     
     this.$newItem.typeahead(null, {
       name: 'ingredients',
-      displayKey: function(ingredient) {
+      displayKey: ingredient => {
         return ingredient.long_description;
       },
       source: ingredientTypeaheadIndex.ttAdapter()
@@ -44,25 +44,25 @@ class View {
 
     this.$newItem.bind('typeahead:selected', function(obj, datum, name) {
       var item = datum;
-      _.each(that.handlers['newItem'], (handler) => { handler(item); });
+      _.each(that.handlers['newItem'], handler => { handler(item); });
       that.$newItem.typeahead('val', '');
     });
     
-    this.$newItem.on('keypress', (event) => {
+    this.$newItem.on('keypress', event => {
       var item = {
         long_description: that.$newItem.typeahead('val'),
         foodgroup_code: null,
         food_number: null
       };
       if (event.keyCode === that.ENTER_KEY) {
-        _.each(that.handlers['newItem'], (handler) => { handler(item); });
+        _.each(that.handlers['newItem'], handler => { handler(item); });
         that.$newItem.typeahead('val', '');
       }
     });
     
     $('body').on('click', this.removeItemSelector, (e) => {
       var $li = $(e.currentTarget).closest('li');
-      _.each(that.handlers['removeItem'], (handler) => { handler($li.attr('data-id')); });
+      _.each(that.handlers['removeItem'], handler => { handler($li.attr('data-id')); });
     });
   }
 
