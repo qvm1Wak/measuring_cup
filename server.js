@@ -50,6 +50,7 @@ app.get('/foods/:foodName', function(req, res) {
     var query = client.query('select food_number, long_description from food_description;');
     var lowest = {relevancy: -Infinity};
     var sortRegex = relevancy.defaultSorter._generateSubjectRegex(name);
+    console.log(name);
     query.on('row', function(row) {      
       var i = null;
       row.relevancy = relevancy.defaultSorter._calcWeight(row.long_description, sortRegex, name);
