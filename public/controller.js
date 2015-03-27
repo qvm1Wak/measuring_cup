@@ -1,3 +1,6 @@
+import $ from 'jquery';
+import _ from 'lodash';
+
 /**
  * Takes a model and view and acts as the controller between them
  *
@@ -49,9 +52,16 @@ class Controller {
     this.model.create(toSave, () => {
       that.view.render('clearNewItem');
       that.model.read((data) => {
-        // call to server
-        // compute simplex
-        that.view.render('showItemList', data);
+        var foodItems = _.filter(data, item => { return item.title.startsWith('food_number:'); });
+        var query = _.map(_.pluck(foodItems, 'title'), item => {
+          return item.slice('food_number:'.length);
+        }).join(',');
+        $.ajax({
+          url: 'ingredients/' + query
+        }).done(function(data) {
+          // compute simplex
+          that.view.render('showItemList', data);
+        });
       });
     });
   }
@@ -67,9 +77,18 @@ class Controller {
     var that = this;
     this.model.remove(id, () => {
       that.model.read((data) => {
-        // call to server
-        // compute simplex
-        that.view.render('showItemList', data);
+        that.model.read((data) => {
+          var foodItems = _.filter(data, item => { return item.title.startsWith('food_number:'); });
+          var query = _.map(_.pluck(foodItems, 'title'), item => {
+            return item.slice('food_number:'.length);
+          }).join(',');
+          $.ajax({
+            url: 'ingredients/' + query
+          }).done(function(data) {
+            // compute simplex
+            that.view.render('showItemList', data);
+          });
+        });
       });
     });
   }

@@ -27,7 +27,7 @@ app.get('/ingredients/:foodIds', function(req, res) {
   pg.connect(connectionString, function(err, client, done) {
     var ids = req.param('foodIds'); // TODO sql injection
     ids = "'" + ids.split(',').join("','") + "'";
-    var queryString = "SELECT a.food_number, b.nutrient_description, a.nutrient_value, b.units FROM nutrient_data as a JOIN nutrient_definition b on a.nutrient_number = b.nutrient_number WHERE a.food_number in (" + ids + ");"; //" + ids + ");";
+    var queryString = "SELECT a.food_number, a.long_description, b.nutrient_description, a.nutrient_value, b.units FROM nutrient_data as a JOIN nutrient_definition b on a.nutrient_number = b.nutrient_number WHERE a.food_number in (" + ids + ");"; //" + ids + ");";
     var query = client.query(queryString);
     query.on('row', function(row) {
       results[row.food_number] = results[row.food_number] || { food_number: row.food_number };
