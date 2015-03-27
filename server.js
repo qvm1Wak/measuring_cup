@@ -6,11 +6,11 @@ var serveStatic = require('serve-static');
 var connectionString = "postgres://postgres:password@172.17.0.2/measuring_cup";
 var bodyParser = require('body-parser');
 var relevancy = require('relevancy');
+var ok = require('okay');
 
 // parse application/json
 var app = express();
 
-var ok = require('okay');
 app.use(require('express-domain-middleware'));
 app.use(serveStatic(__dirname + '/public'));
 app.use(bodyParser.json());
@@ -22,19 +22,25 @@ app.use(function errorHandler(err, req, res, next) {
 
 app.listen(3000);
 
-app.get('/ingredients/:foodId', function(req, res) {
-  var results = [];
+app.get('/ingredients/:foodIds', function(req, res) {
+  var results = {};
   pg.connect(connectionString, function(err, client, done) {
-    var id = req.param('foodId');
-    var query = client.query("select b.nutrient_description, a.nutrient_value, b.units from nutrient_data as a join nutrient_definition b on a.nutrient_number = b.nutrient_number where a.food_number = '" + id + "';");
-
+    var ids = req.param('foodIds'); // TODO sql injection
+    ids = "'" + ids.split(',').join("','") + "'";
+    var queryString = "SELECT a.food_number, b.nutrient_description, a.nutrient_value, b.units FROM nutrient_data as a JOIN nutrient_definition b on a.nutrient_number = b.nutrient_number WHERE a.food_number in (" + ids + ");"; //" + ids + ");";
+    var query = client.query(queryString);
     query.on('row', function(row) {
-      results.push(row);
+      results[row.food_number] = results[row.food_number] || { food_number: row.food_number };
+      results[row.food_number][row.nutrient_description] = {
+        value: row.nutrient_value,
+        units: row.units
+      };
     });
 
     query.on('end', function() {
       client.end();
-      return res.json(results);
+      var values = Object.keys(results).map(function (key) { return results[key]; });
+      return res.json(values);
     });
 
     if(err) {
