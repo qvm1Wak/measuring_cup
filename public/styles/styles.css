@@ -185,19 +185,30 @@ picture {
   margin: 0;
   max-width: 100%; }
 
-html {
+body {
   background: #3e9795;
-  color: white; }
+  color: white;
+  font-size: 18px;
+  padding: 0;
+  margin: 0; }
+
+.logo {
+  width: 300px;
+  margin: 0 auto;
+  display: block; }
 
 .app {
+  font: 100%/1.618 'Droid Sans';
+  /* golden ratio line-height */
+  line-height: 1.375em;
   width: 40em;
   margin: 0 auto; }
   .app .new-item {
     width: 100%;
     display: block; }
 
-button #save-button {
-  background-color: red;
+.save-button {
+  background-color: #2f7371;
   border-radius: 3px;
   border: 0;
   color: white;
@@ -207,22 +218,40 @@ button #save-button {
   padding: 7px 18px;
   text-decoration: none;
   background-clip: padding-box;
+  width: 30em;
+  margin: 0 auto;
+  display: block;
   padding: 0.7em 1em; }
-  button #save-button:hover:not(:disabled) {
-    background-color: #ff1a1a;
+  .save-button:hover:not(:disabled) {
+    background-color: #338987;
     cursor: pointer; }
-  button #save-button:active:not(:disabled), button #save-button:focus:not(:disabled) {
-    background-color: #e10505;
+  .save-button:active:not(:disabled), .save-button:focus:not(:disabled) {
+    background-color: #2a5e5d;
     cursor: pointer; }
-  button #save-button:disabled {
+  .save-button:disabled {
     cursor: not-allowed;
     opacity: 0.5; }
 
-@font-face {
-  font-family: "Prociono";
-  src: url("../font/Prociono-Regular-webfont.ttf"); }
+.remove-item-button {
+  background-color: darkgray;
+  font-size: 14px;
+  padding: 0.25em; }
+
+.profile-button {
+  background-color: darkgray;
+  font-size: 14px;
+  padding: 0.25em; }
+
+.item-list li {
+  margin-bottom: 1em; }
+
 .twitter-typeahead, .twitter-typeahead input {
-  width: 100%; }
+  width: 100%;
+  color: black;
+  margin-bottom: 1em; }
+
+.subtitle {
+  text-align: center; }
 
 .tt-input,
 .tt-hint {
@@ -267,5 +296,15 @@ button #save-button {
 
 .tt-suggestion p {
   margin: 0; }
+
+footer {
+  text-align: center;
+  background-color: #333;
+  width: 100%;
+  color: white;
+  margin-top: 4em;
+  padding-top: 2em;
+  height: 6em;
+  display: block; }
 
 /*# sourceMappingURL=styles.css.map */

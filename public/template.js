@@ -30,8 +30,8 @@ function Template() {
     +	'<div class="view">'
     +	'{{long_description}}'
     +   ' - '
-    +   '({{quantity_recommended}}g)'
-    +	'<button class="remove-item-button"></button>'
+    +   '({{quantity_recommended}}g) '
+    +	'<button class="remove-item-button">Delete</button>'
     +	'</div>'
     +	'</li>';
 }
@@ -52,6 +52,7 @@ function Template() {
  * });
  */
 Template.prototype.show = function (data) {
+  console.log(data);
   var i, l;
   var view = '';
   for (i = 0, l = data.length; i < l; i++) {

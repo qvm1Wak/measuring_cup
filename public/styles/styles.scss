@@ -4,12 +4,23 @@
 $base-accent-color: red !default;
 $base-color: #3e9795;
 
-html {
+body {
     background: $base-color;
     color: white;
+    font-size: 18px;
+    padding: 0;
+    margin: 0;
+}
+
+.logo {
+    width: 300px;
+    margin: 0 auto;
+    display: block;
 }
 
 .app {
+    font: 100%/1.618 'Droid Sans'; /* golden ratio line-height */
+    line-height: 1.375em;
     width: 40em;
     margin: 0 auto;
     .new-item {
@@ -20,19 +31,39 @@ html {
     }
 }
 
-button #save-button{
-    @include button(flat, $base-accent-color);
+.save-button{
+    @include button(flat, darken($base-color, 10%));
+    // background-color: darken($base-color, 10%);
+    width: 30em;
+    margin: 0 auto;
+    display: block;
     padding: 0.7em 1em;
 }
 
+.remove-item-button {
+    background-color: darkgray;
+    font-size: 14px;
+    padding: 0.25em;
+}
 
-@font-face {
-    font-family: "Prociono";
-    src: url("../font/Prociono-Regular-webfont.ttf");
+.profile-button {
+    background-color: darkgray;
+    font-size: 14px;
+    padding: 0.25em;
+}
+
+.item-list li {
+    margin-bottom: 1em;
 }
 
 .twitter-typeahead, .twitter-typeahead input {
     width: 100%;
+    color: black;
+    margin-bottom: 1em;
+}
+
+.subtitle {
+    text-align: center;
 }
 
 .tt-input, /* UPDATE: newer versions use tt-input instead of tt-query */
@@ -86,3 +117,13 @@ button #save-button{
     margin: 0;
 }
 
+footer {
+    text-align: center;
+    background-color: #333;
+    width: 100%;
+    color: white;
+    margin-top: 4em;
+    padding-top: 2em;
+    height: 6em;
+    display: block;
+}

@@ -10,13 +10,31 @@
   <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
   <![endif]-->
   <script src="http://localhost:8080/skewer"></script>
+  <link href='http://fonts.googleapis.com/css?family=Droid+Sans' rel='stylesheet' type='text/css'>
 </head>
 <body>
   <main class="app">
+    <object class="logo" type="image/svg+xml" data="images/icons_svg/logo.svg">Your browser does not support SVG</object>
+    <div class="subtitle">Make a recipe by adding ingredients. Measuring Cup calculates the quantities.</div><br>
     <input class="new-item"></input>
     <ul class="item-list"></ul>
+
+    <br>
+    <b>Recipe settings:</b> <button class="profile-button">Change</button><br>
+    <i>Source:</i> local preferred</br>
+    <i>Calories:</i> 2000</br>
+    <i>Profile:</i> USDA DRI Female 20-30</br>
+    <i>Macronutrients:</i> 48% Carb / 17% Protein / 35% Fat</br>
+    <br>
+    
     <button class="save-button">Save</button>
+    <br>
+    <br>
   </main>
+  <footer>
+    <small>Madiera Interactive Technologies Institute - Carnegie Mellon University - 2015</small>
+  </footer>
+  
   <script src="jspm_packages/system.js"></script>
   <script src="config.js"></script>
   <script>
