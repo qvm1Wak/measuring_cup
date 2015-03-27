@@ -53,8 +53,9 @@ class Controller {
     $.ajax({
       url: 'ingredients/' + query
     }).done(function(ingredientData) {
-      that.computeQuantities(ingredientData);
-      var index = _.indexBy(ingredientData, 'food_number');
+      var computedData = that.computeQuantities(ingredientData);
+      console.log('ingredient', ingredientData, 'computed', computedData);
+      var index = _.indexBy(computedData, 'food_number');
       var viewData = data.map(item => {
         var id = item.title.startsWith('food_number:') ? item.title.slice('food_number:'.length) : item.title;
         if (index[id]) { return _.extend({id: item.id}, index[id]); };
@@ -115,21 +116,21 @@ class Controller {
       return keyValues.reduce((memo, pair) => { memo[pair.key] = pair.value; return memo; }, {});
     });
     var index = _.indexBy(data, 'long_description');
+    var constraints = {
+      protein: {min:85, max: 95},
+      'total lipid (fat)': {min:75, max: 85},
+      'carbohydrate, by difference': {min:225, max:275},
+      energy: {min: 1980, max:2020}
+    };
     var solver = new Solver,
         results,
         model = {
           optimize: "energy",
           opType: "min",
-          constraints: {
-            "protein": {min:85, max: 95},
-            "total lipid (fat)": {min:75, max: 85},
-            "carbohydrate, by difference": {min:225, max:275},
-            "energy": {min: 1980, max:2020}
-          },
-          variables: index,
+          constraints: constraints,
+          variables: index
           // ints: {
           //   aor_ortho_core: 1,
-          //   choline_bitartrate: 1
           // }
         };
 
@@ -139,19 +140,26 @@ class Controller {
 
     results = solver.Solve(model);
 
-    console.log(results);
-    var quantities = Object.keys(results).reduce((memo, result) => {
-      if (result in data) {
-        memo[result] = {
-          amount: 100 * results[result] // ?? TODO servings
-          //calories: ingredients[result].calories * results[result]
-        };
+    // multiply the recommended ratios by the ingredient quantities
+    return Object.keys(index).reduce((memo, ingredientName) => {
+      var ingredient = index[ingredientName];
+      var multiplier = results[ingredientName];
+      var nutrient;
+      var computedIngredient = {};
+      computedIngredient.multiplier_recommended = multiplier;
+      for (nutrient in ingredient) {
+        
+        computedIngredient[nutrient] = (isNumeric(+ingredient[nutrient]) && nutrient !== 'food_number') ? +ingredient[nutrient] : ingredient[nutrient];
+        if (nutrient in constraints && ingredientName in results) {
+          computedIngredient[nutrient + '_recommended'] = +ingredient[nutrient] * multiplier;
+        }
+        if (nutrient in constraints && !(ingredientName in results)) {
+          computedIngredient[nutrient + '_recommended'] = 0;
+        }
       }
+      memo.push(computedIngredient);
       return memo;
-    }, {});
-
-    console.log(quantities);
-
+    }, []);
   }
 }
 
