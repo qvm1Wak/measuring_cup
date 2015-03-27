@@ -21,6 +21,7 @@ class Controller {
       that.removeItem(id);
     });
     // this.model.removeAll();
+    that.model.read((data) => { that.refreshUIFromDB(data); });
   }
 
   /**
@@ -39,6 +40,33 @@ class Controller {
     // TODO handle page transition details
   }
 
+  refreshUIFromDB (data) {
+    var that = this;
+    var foodItems = _.filter(data, item => { return item.title.startsWith('food_number:'); });
+    var query = _.map(_.pluck(foodItems, 'title'), item => {
+      return item.slice('food_number:'.length);
+    });
+    if (!foodItems.length) {
+      that.view.render('showItemList', []);
+      return;
+    }
+    $.ajax({
+      url: 'ingredients/' + query
+    }).done(function(ingredientData) {
+      // compute simplex
+      var index = _.indexBy(ingredientData, 'food_number');
+      var viewData = data.map(item => {
+        var id = item.title.startsWith('food_number:') ? item.title.slice('food_number:'.length) : item.title;
+        if (index[id]) { return _.extend({id: item.id}, index[id]); };
+        return {
+          id: item.id,
+          long_description: item.title
+        };
+      });
+      that.view.render('showItemList', viewData);
+    });
+  }
+  
   /**
    * An event to fire whenever you want to add an item. Simply pass in the event
    * object and it'll handle the DOM insertion and saving of the new item.
@@ -52,28 +80,7 @@ class Controller {
     
     this.model.create(toSave, () => {
       that.view.render('clearNewItem');
-      that.model.read((data) => {
-        var foodItems = _.filter(data, item => { return item.title.startsWith('food_number:'); });
-        var query = _.map(_.pluck(foodItems, 'title'), item => {
-          return item.slice('food_number:'.length);
-        });
-        $.ajax({
-          url: 'ingredients/' + query
-        }).done(function(ingredientData) {
-          // compute simplex
-          console.log(data);
-          var index = _.indexBy(ingredientData, 'food_number');
-          var viewData = data.map(item => {
-            var id = item.title.startsWith('food_number:') ? item.title.slice('food_number:'.length) : item.title;
-            if (index[id]) { return _.extend({id: item.id}, index[id]); };
-            return {
-              id: item.id,
-              long_description: item.title
-            };
-          });
-          that.view.render('showItemList', viewData);
-        });
-      });
+      that.model.read((data) => { that.refreshUIFromDB(data); });
     });
   }
 
@@ -86,30 +93,8 @@ class Controller {
    */
   removeItem (id) {
     var that = this;
-    console.log(id);
     this.model.remove(id, () => {
-      that.model.read(data => {
-        var foodItems = _.filter(data, item => { return item.title.startsWith('food_number:'); });
-        var query = _.map(_.pluck(foodItems, 'title'), item => {
-          return item.slice('food_number:'.length);
-        });
-        $.ajax({
-          url: 'ingredients/' + query
-        }).done(function(ingredientData) {
-          // compute simplex
-          console.log(data);
-          var index = _.indexBy(ingredientData, 'food_number');
-          var viewData = data.map(item => {
-            var id = item.title.startsWith('food_number:') ? item.title.slice('food_number:'.length) : item.title;
-            if (index[id]) { return _.extend({id: item.id}, index[id]); };
-            return {
-              id: item.id,
-              long_description: item.title
-            };
-          });
-          that.view.render('showItemList', viewData);
-        });
-      });
+      that.model.read((data) => { that.refreshUIFromDB(data); });
     });
   }
 
