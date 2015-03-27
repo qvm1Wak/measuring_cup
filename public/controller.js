@@ -1,5 +1,6 @@
 import $ from 'jquery';
 import _ from 'lodash';
+import solve from 'jsLPSolver';
 
 /**
  * Takes a model and view and acts as the controller between them
@@ -13,10 +14,10 @@ class Controller {
     var that = this;
     this.model = model;
     this.view = view;
-    this.view.bind('newItem', (title) => {
+    this.view.bind('newItem', title => {
       that.addItem(title);
     });
-    this.view.bind('removeItem', (id) => {
+    this.view.bind('removeItem', id => {
       that.removeItem(id);
     });
     // this.model.removeAll();
@@ -98,6 +99,45 @@ class Controller {
       // save the list somewhere
       // this.view.render('saveRecipe', data);
     });
+  }
+
+  computeQuantities (data) {
+    var solver = new solve.Solver(),
+        results,
+        model = {
+          optimize: "item_cost",
+          opType: "min",
+          constraints: {
+            "protein": {min:85, max: 95},
+            "fat": {min:75, max: 85},
+            "carbs": {min:225, max:275},
+            "calories": {min: 1980, max:2020}
+          },
+          variables: data,
+          // ints: {
+          //   aor_ortho_core: 1,
+          //   choline_bitartrate: 1
+          // }
+        };
+
+    var isNumeric = function (n) {
+      return !isNaN(parseFloat(n)) && isFinite(n);
+    };
+
+    results = solver.Solve(model);
+
+    var quantities = Object.keys(results).reduce((memo, result) => {
+      if (result in data) {
+        memo[result] = {
+          amount: data[result].serving * results[result]
+          //calories: ingredients[result].calories * results[result]
+        };
+      }
+      return memo;
+    }, {});
+
+    console.log(quantities);
+
   }
 }
 

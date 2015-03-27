@@ -46,7 +46,6 @@ class View {
       var item = datum;
       _.each(that.handlers['newItem'], (handler) => { handler(item); });
       that.$newItem.typeahead('val', '');
-      console.log(datum);
     });
     
     this.$newItem.on('keypress', (event) => {
