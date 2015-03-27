@@ -47,10 +47,9 @@ app.get('/foods/:foodName', function(req, res) {
   pg.connect(connectionString, function(err, client, done) {
     var name = req.param('foodName');
     var results = [];
-    var query = client.query('select food_number, long_description from food_description;');
+    var query = client.query('select food_number, long_description, foodgroup_code from food_description;');
     var lowest = {relevancy: -Infinity};
     var sortRegex = relevancy.defaultSorter._generateSubjectRegex(name);
-    console.log(name);
     query.on('row', function(row) {      
       var i = null;
       row.relevancy = relevancy.defaultSorter._calcWeight(row.long_description, sortRegex, name);
@@ -78,6 +77,7 @@ app.get('/foods/:foodName', function(req, res) {
     }
   });
 });
+
 /*
 app.get('/recipes/', function(req, res) {
   var results = [];

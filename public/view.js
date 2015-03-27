@@ -26,57 +26,6 @@ class View {
 
     var that = this;
 
-
-
-    // var substringMatcher = function(strs) {
-    //   console.log('substring matcher');
-    //   return function findMatches(q, cb) {
-    //     console.log('substring matcher a');
-    //     var matches, substrRegex;
-        
-    //     // an array that will be populated with substring matches
-    //     matches = [];
-        
-    //     // regex used to determine if a string contains the substring `q`
-    //     substrRegex = new RegExp(q, 'i');
-        
-    //     // iterate through the pool of strings and for any string that
-    //     // contains the substring `q`, add it to the `matches` array
-    //     $.each(strs, function(i, str) {
-    //       if (substrRegex.test(str)) {
-    //         // the typeahead jQuery plugin expects suggestions to a
-    //         // JavaScript object, refer to typeahead docs for more info
-    //         matches.push({ value: str });
-    //       }
-    //     });
-        
-    //     cb(matches);
-    //   };
-    // };
-    
-    // var states = ['Alabama', 'Alaska', 'Arizona', 'Arkansas', 'California',
-    //               'Colorado', 'Connecticut', 'Delaware', 'Florida', 'Georgia', 'Hawaii',
-    //               'Idaho', 'Illinois', 'Indiana', 'Iowa', 'Kansas', 'Kentucky', 'Louisiana',
-    //               'Maine', 'Maryland', 'Massachusetts', 'Michigan', 'Minnesota',
-    //               'Mississippi', 'Missouri', 'Montana', 'Nebraska', 'Nevada', 'New Hampshire',
-    //               'New Jersey', 'New Mexico', 'New York', 'North Carolina', 'North Dakota',
-    //               'Ohio', 'Oklahoma', 'Oregon', 'Pennsylvania', 'Rhode Island',
-    //               'South Carolina', 'South Dakota', 'Tennessee', 'Texas', 'Utah', 'Vermont',
-    //               'Virginia', 'Washington', 'West Virginia', 'Wisconsin', 'Wyoming'
-    //              ];
-
-    // this.$newItem.typeahead({
-    //   hint: true,
-    //   highlight: true,
-    //   minLength: 1
-    // },
-    // {
-    //   name: 'states',
-    //   displayKey: 'value',
-    //   source: substringMatcher(states)
-    // });
-
-
     var ingredientTypeaheadIndex = new Bloodhound({
       datumTokenizer: Bloodhound.tokenizers.obj.whitespace('value'),
       queryTokenizer: Bloodhound.tokenizers.whitespace,
@@ -93,16 +42,17 @@ class View {
       source: ingredientTypeaheadIndex.ttAdapter()
     }); 
 
-
-    
-    $(this.$newItemButton).on('click', () => {
-      _.each(that.handlers['newItem'], (handler) => { handler(that.$newItem.val()); });
-      that.$newItem.val('');
+    this.$newItem.bind('typeahead:selected', function(obj, datum, name) {      
+      _.each(that.handlers['newItem'], (handler) => { handler(that.$newItem.typeahead('val')); });
+      that.$newItem.typeahead('val', '');
+      console.log(datum);
     });
-    $(this.$newItem).on('keypress', (event) => {
+    
+
+    this.$newItem.on('keypress', (event) => {
       if (event.keyCode === that.ENTER_KEY) {
-        _.each(that.handlers['newItem'], (handler) => { handler(that.$newItem.val()); });
-        that.$newItem.val('');
+        _.each(that.handlers['newItem'], (handler) => { handler(that.$newItem.typeahead('val')); });
+        that.$newItem.typeahead('val', '');
       }
     });
     $('body').on('click', this.removeItemSelector, (e) => {
@@ -118,7 +68,7 @@ class View {
         that.$itemList.html(that.template.show(parameter));
       },
       clearNewItem: () => {
-        that.$newItem.value = '';
+        that.$newItem.typeahead('val', '');
       },
       focus: () => {
         that.$newItem.focus();
