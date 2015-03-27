@@ -34,7 +34,11 @@ class View {
     
     ingredientTypeaheadIndex.initialize();
     
-    this.$newItem.typeahead(null, {
+    this.$newItem.typeahead({
+      hint: true,
+      highlight: true,
+      minLength: 1 
+    }, {
       name: 'ingredients',
       displayKey: ingredient => {
         return ingredient.long_description;

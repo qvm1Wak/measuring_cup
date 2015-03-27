@@ -29,8 +29,8 @@ function Template() {
     =	'<li data-id="{{id}}">'
     +	'<div class="view">'
     +	'{{long_description}}'
-    +   ' '
-    +   '{{quantity_recommended}}'
+    +   ' - '
+    +   '({{quantity_recommended}}g)'
     +	'<button class="remove-item-button"></button>'
     +	'</div>'
     +	'</li>';
