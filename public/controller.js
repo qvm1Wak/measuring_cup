@@ -53,7 +53,7 @@ class Controller {
     $.ajax({
       url: 'ingredients/' + query
     }).done(function(ingredientData) {
-      // compute simplex
+      that.computeQuantities(ingredientData);
       var index = _.indexBy(ingredientData, 'food_number');
       var viewData = data.map(item => {
         var id = item.title.startsWith('food_number:') ? item.title.slice('food_number:'.length) : item.title;
@@ -106,18 +106,27 @@ class Controller {
   }
 
   computeQuantities (data) {
-    var solver = new solve.Solver(),
+    data = data.map(item => {
+      var keys = Object.keys(item);
+      var keyValues = keys.map(key => {
+        if (item[key] && item[key].value) return {key: key, value: item[key].value};
+        return {key: key, value: item[key]};
+      });
+      return keyValues.reduce((memo, pair) => { memo[pair.key] = pair.value; return memo; }, {});
+    });
+    var index = _.indexBy(data, 'long_description');
+    var solver = new Solver,
         results,
         model = {
-          optimize: "item_cost",
+          optimize: "energy",
           opType: "min",
           constraints: {
             "protein": {min:85, max: 95},
-            "fat": {min:75, max: 85},
-            "carbs": {min:225, max:275},
-            "calories": {min: 1980, max:2020}
+            "total lipid (fat)": {min:75, max: 85},
+            "carbohydrate, by difference": {min:225, max:275},
+            "energy": {min: 1980, max:2020}
           },
-          variables: data,
+          variables: index,
           // ints: {
           //   aor_ortho_core: 1,
           //   choline_bitartrate: 1
@@ -130,10 +139,11 @@ class Controller {
 
     results = solver.Solve(model);
 
+    console.log(results);
     var quantities = Object.keys(results).reduce((memo, result) => {
       if (result in data) {
         memo[result] = {
-          amount: data[result].serving * results[result]
+          amount: 100 * results[result] // ?? TODO servings
           //calories: ingredients[result].calories * results[result]
         };
       }
