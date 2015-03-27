@@ -1,1 +1,9 @@
-styles.scss
+@import "bourbon/bourbon";
+@import "base/base";
+
+$base-accent-color: #477DCA !default;
+
+button #save-button{
+  @include button(flat, $base-accent-color);
+  padding: 0.7em 1em;
+}
