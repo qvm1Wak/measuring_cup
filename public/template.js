@@ -1,4 +1,6 @@
 /*jshint laxbreak:true */
+import _ from 'lodash';
+
 var htmlEscapes = {
   '&': '&amp;',
   '<': '&lt;',
@@ -27,6 +29,8 @@ function Template() {
     =	'<li data-id="{{id}}">'
     +	'<div class="view">'
     +	'{{long_description}}'
+    +   ' '
+    +   '{{quantity_recommended}}'
     +	'<button class="remove-item-button"></button>'
     +	'</div>'
     +	'</li>';
@@ -54,6 +58,7 @@ Template.prototype.show = function (data) {
     var template = this.defaultTemplate;
     template = template.replace('{{id}}', data[i].id);
     template = template.replace('{{long_description}}', escape(data[i].long_description));
+    template = template.replace('{{quantity_recommended}}', data[i].quantity_recommended);
     view = view + template;
   }
   return view;

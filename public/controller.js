@@ -54,7 +54,6 @@ class Controller {
       url: 'ingredients/' + query
     }).done(function(ingredientData) {
       var computedData = that.computeQuantities(ingredientData);
-      console.log('ingredient', ingredientData, 'computed', computedData);
       var index = _.indexBy(computedData, 'food_number');
       var viewData = data.map(item => {
         var id = item.title.startsWith('food_number:') ? item.title.slice('food_number:'.length) : item.title;
@@ -138,17 +137,21 @@ class Controller {
       return !isNaN(parseFloat(n)) && isFinite(n);
     };
 
+    var twoDecimal = n => {
+      return parseFloat(Math.round(n * 100) / 100).toFixed(2);
+    };
+
     results = solver.Solve(model);
 
     // multiply the recommended ratios by the ingredient quantities
     return Object.keys(index).reduce((memo, ingredientName) => {
       var ingredient = index[ingredientName];
-      var multiplier = results[ingredientName];
+      var multiplier = results[ingredientName] ? results[ingredientName] : 0;
       var nutrient;
       var computedIngredient = {};
       computedIngredient.multiplier_recommended = multiplier;
+      computedIngredient.quantity_recommended = twoDecimal(multiplier * 100);
       for (nutrient in ingredient) {
-        
         computedIngredient[nutrient] = (isNumeric(+ingredient[nutrient]) && nutrient !== 'food_number') ? +ingredient[nutrient] : ingredient[nutrient];
         if (nutrient in constraints && ingredientName in results) {
           computedIngredient[nutrient + '_recommended'] = +ingredient[nutrient] * multiplier;
