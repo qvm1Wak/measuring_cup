@@ -1,3 +1,29 @@
+/*
+# getting along with docker
+sudo docker run --name node-postgres -e POSTGRES_PASSWORD=password -dpostgres
+sudo docker run -it --volumes-from ac5 measuringcup_web:latest /bin/bash
+sudo docker exec -it a5c npm start
+dip node-postgres
+
+# watching style changes (from within a docker container)
+sass --watch public/styles/styles.scss:public/styles/styles.css
+
+# data files
+# https://www.ars.usda.gov/SP2UserFiles/Place/12354500/Data/SR27/dnload/sr27asc.zip
+# https://www.ars.usda.gov/SP2UserFiles/Place/80400525/Data/SR27/sr27_doc.pdf
+# http://stackoverflow.com/questions/24792638/how-can-i-import-data-from-ascii-iso-iec-8859-1-to-my-rails-pgsql-database
+
+# uploading the data files to postgres with the correct encoding
+psql -U postgres -h 172.17.0.2 -d measuring_cup -c "\copy food_description FROM 'FOOD_DES.txt' (FORMAT CSV, DELIMITER '^', QUOTE '~', ENCODING 'latin1');"
+
+psql -U postgres -h 172.17.0.2 -d measuring_cup -c "\copy nutrient_definition FROM 'NUTR_DEF.txt' (FORMAT CSV, DELIMITER '^', QUOTE '~', ENCODING 'latin1');"
+
+psql -U postgres -h 172.17.0.2 -d measuring_cup -c "\copy nutrient_data FROM 'NUT_DATA.txt' (FORMAT CSV, DELIMITER '^', QUOTE '~', ENCODING 'latin1');"
+
+# sample query
+select a.nutrient_number, b.nutrient_description, a.nutrient_value, b.units from nutrient_data as a join nutrient_definition b on a.nutrient_number = b.nutrient_number where a.food_number = '01001';
+*/
+
 CREATE TABLE food_description (
     food_number varchar(5) NOT NULL PRIMARY KEY,
     foodgroup_code varchar(4) NOT NULL,
@@ -44,18 +70,3 @@ CREATE TABLE nutrient_data (
     add_or_modified_date varchar(10),
     confidence_code varchar(1)
 );
-
-sudo docker run --name node-postgres -e POSTGRES_PASSWORD=password -dpostgres
-dip node-postgres
-
-# https://www.ars.usda.gov/SP2UserFiles/Place/12354500/Data/SR27/dnload/sr27asc.zip
-# https://www.ars.usda.gov/SP2UserFiles/Place/80400525/Data/SR27/sr27_doc.pdf
-# http://stackoverflow.com/questions/24792638/how-can-i-import-data-from-ascii-iso-iec-8859-1-to-my-rails-pgsql-database
-
-select a.nutrient_number, b.nutrient_description, a.nutrient_value, b.units from nutrient_data as a join nutrient_definition b on a.nutrient_number = b.nutrient_number where a.food_number = '01001';
-
-psql -U postgres -h 172.17.0.2 -d measuring_cup -c "\copy food_description FROM 'FOOD_DES.txt' (FORMAT CSV, DELIMITER '^', QUOTE '~', ENCODING 'latin1');"
-
-psql -U postgres -h 172.17.0.2 -d measuring_cup -c "\copy nutrient_definition FROM 'NUTR_DEF.txt' (FORMAT CSV, DELIMITER '^', QUOTE '~', ENCODING 'latin1');"
-
-psql -U postgres -h 172.17.0.2 -d measuring_cup -c "\copy nutrient_data FROM 'NUT_DATA.txt' (FORMAT CSV, DELIMITER '^', QUOTE '~', ENCODING 'latin1');"
