@@ -1,6 +1,7 @@
-./node_modules/*
-./public/styles/styles.css.map
-./public/jspm_packages/*
+node_modules/*
+public/styles/styles.css.map
+public/jspm_packages
 .DS_Store
-./public/.DS_Store
+public/.DS_Store
 .sass-cache*
+npm-debug.log

@@ -1,9 +1,8 @@
-console.log('server started');
-
+/*global require, process, __dirname */
 var pg = require('pg');
 var express = require('express');
 var serveStatic = require('serve-static');
-var connectionString = "postgres://postgres:password@172.17.0.2/measuring_cup";
+var connectionString = process.env.DATABASE_URL;
 var bodyParser = require('body-parser');
 var relevancy = require('relevancy');
 var ok = require('okay');
@@ -20,12 +19,17 @@ app.use(function errorHandler(err, req, res, next) {
   res.send(500, "Something bad happened. :(");
 });
 
-app.listen(3000);
+var PORT = 3000;
+app.listen(PORT);
+require('dns').lookup(require('os').hostname(), function ipAddressFound(err, add, fam) {
+  console.log('Server started: '+ add + ':' + PORT);
+});
 
-app.get('/ingredients/:foodIds', function(req, res) {
+
+app.get('/ingredients/:foodIds', function ingredientsFoodIdsRequest(req, res) {
   var results = {};
-  pg.connect(connectionString, function(err, client, done) {
-    var ids = req.param('foodIds'); // TODO sql injection
+  pg.connect(connectionString, function pgConnect(err, client, done) {
+    var ids = req.param('foodIds');
     ids = "'" + ids.split(',').join("','") + "'";
     var queryString = "\
         SELECT a.food_number, c.long_description, b.nutrient_description, a.nutrient_value, b.units \
@@ -34,9 +38,10 @@ app.get('/ingredients/:foodIds', function(req, res) {
           on a.nutrient_number = b.nutrient_number \
         JOIN food_description c \
           on a.food_number = c.food_number \
-        WHERE a.food_number in (" + ids + ");";
-    var query = client.query(queryString);
-    query.on('row', function(row) {
+    WHERE a.food_number in ($1);";
+    // pass items in separately to escape sql injection
+    var query = client.query(queryString, [ids]);
+    query.on('row', function onRow(row) {
       results[row.food_number] = results[row.food_number] || {
         long_description: row.long_description,
         food_number: row.food_number
@@ -48,9 +53,9 @@ app.get('/ingredients/:foodIds', function(req, res) {
       };
     });
 
-    query.on('end', function() {
+    query.on('end', function onEnd() {
       client.end();
-      var values = Object.keys(results).map(function (key) { return results[key]; });
+      var values = Object.keys(results).map(function(key) { return results[key]; });
       return res.json(values);
     });
 
@@ -67,13 +72,13 @@ app.get('/foods/:foodName', function(req, res) {
     var query = client.query('select food_number, long_description, foodgroup_code from food_description;');
     var lowest = {relevancy: -Infinity};
     var sortRegex = relevancy.defaultSorter._generateSubjectRegex(name);
-    query.on('row', function(row) {      
+    query.on('row', function onRow(row) {
       var i = null;
       row.relevancy = relevancy.defaultSorter._calcWeight(row.long_description, sortRegex, name);
       // row.relevancy = relevancy.weight(name, row.long_description);
       if (row.relevancy < lowest.relevancy && results.length === 10) return;
       
-      i = results.reduce(function (memo, result, idx) {
+      i = results.reduce(function(memo, result, idx) {
         if (memo === null && (!result || row.relevancy > result.relevancy)) {
           memo = idx;
         }
@@ -81,12 +86,13 @@ app.get('/foods/:foodName', function(req, res) {
       }, null);
       results.splice(i === null ? results.length - 1 : i, 0, row);
       lowest = results[results.length -1];
-      if (results.length > 10) results = results.slice(0, 10);
+      // slice periodically to avoid storing everything in memory
+      if (results.length % 100 === 0) results = results.slice(0, 10);
     });
 
-    query.on('end', function() {
+    query.on('end', function onEnd() {
       client.end();
-      return res.json(results);
+      return res.json(results.slice(0, 10));
     });
 
     if(err) {

@@ -22,5 +22,8 @@
       "lodash": "npm:lodash@^2.4.1",
       "typeahead.js": "npm:typeahead.js@0.10.5"
     }
+  },
+  "devDependencies": {
+    "multiline": "^1.0.2"
   }
 }
